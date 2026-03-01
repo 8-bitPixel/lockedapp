@@ -59,7 +59,3 @@ npm run desktop
 - Screenshots are sensitive. This app captures your screen and sends the image to the AI provider for analysis while a session is running.
 - Do not use this on devices or accounts you do not own/control, and do not use it where screenshots would violate policy/law.
 
-## Repo Hygiene
-
-- `.gitignore` is included to avoid committing `node_modules/` and secret files like `.env*`.
-

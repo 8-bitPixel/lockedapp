@@ -2,8 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const { app, BrowserWindow, desktopCapturer, ipcMain, screen } = require("electron");
 
-const NORMAL_CHECK_INTERVAL_MS = 30000;
-const OFFTASK_CHECK_INTERVAL_MS = 10000;
+const NORMAL_CHECK_INTERVAL_MS = 15000;
+const OFFTASK_CHECK_INTERVAL_MS = 7000;
 const DEFAULT_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 const UI_ZOOM_FACTOR = 0.8;
 const DEFAULT_RECOMMENDED_MINUTES = 30;
@@ -234,6 +234,9 @@ function createOverlayWindow() {
   overlayWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   overlayWindow.setAlwaysOnTop(true, "screen-saver");
   overlayWindow.setIgnoreMouseEvents(true);
+  // Prevent the overlay content from appearing in screenshots / screen recording APIs where supported.
+  // This avoids the visible "blink" from hiding the overlay during capture.
+  overlayWindow.setContentProtection(true);
   return overlayWindow;
 }
 
@@ -263,43 +266,23 @@ function sleep(ms) {
 }
 
 async function capturePrimaryScreenAsDataUrl() {
-  const wasOverlayVisible = isOverlayVisible();
-  if (wasOverlayVisible) {
-    overlayWindow.hide();
-    // Give the compositor a moment so the overlay does not appear in capture.
-    await sleep(120);
-  }
-
   const primaryDisplay = screen.getPrimaryDisplay();
-  try {
-    const sources = await desktopCapturer.getSources({
-      types: ["screen"],
-      thumbnailSize: {
-        width: Math.max(1280, primaryDisplay.size.width),
-        height: Math.max(720, primaryDisplay.size.height),
-      },
-    });
+  const sources = await desktopCapturer.getSources({
+    types: ["screen"],
+    thumbnailSize: {
+      width: Math.max(1280, primaryDisplay.size.width),
+      height: Math.max(720, primaryDisplay.size.height),
+    },
+  });
 
-    const displaySource =
-      sources.find((src) => src.display_id === String(primaryDisplay.id)) || sources[0];
+  const displaySource =
+    sources.find((src) => src.display_id === String(primaryDisplay.id)) || sources[0];
 
-    if (!displaySource || displaySource.thumbnail.isEmpty()) {
-      throw new Error("Could not capture screen thumbnail.");
-    }
-
-    return displaySource.thumbnail.toDataURL();
-  } finally {
-    if (
-      wasOverlayVisible &&
-      monitorState.running &&
-      !monitorState.paused &&
-      monitorState.offTaskMode &&
-      overlayWindow &&
-      !overlayWindow.isDestroyed()
-    ) {
-      overlayWindow.showInactive();
-    }
+  if (!displaySource || displaySource.thumbnail.isEmpty()) {
+    throw new Error("Could not capture screen thumbnail.");
   }
+
+  return displaySource.thumbnail.toDataURL();
 }
 
 function parseJsonMaybeWrapped(text) {
