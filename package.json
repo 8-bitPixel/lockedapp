@@ -1,0 +1,12 @@
+﻿{
+  "name": "lockedinai",
+  "version": "1.0.0",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "desktop": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^35.0.0"
+  }
+}

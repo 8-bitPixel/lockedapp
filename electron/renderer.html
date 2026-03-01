@@ -1,0 +1,154 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Locked</title>
+    <link rel="stylesheet" href="./renderer.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="app-card">
+        <h1>Locked</h1>
+
+        <div class="tabs">
+          <button id="tabMainBtn" class="tab-btn active">Monitor</button>
+          <button id="tabStatsBtn" class="tab-btn">Stats</button>
+        </div>
+
+        <section id="tabMain" class="tab-panel">
+          <section class="field-card">
+            <div class="field-row">
+              <label for="duration">Session Length</label>
+              <div class="row-input">
+                <input id="duration" type="number" min="1" step="1" value="30" />
+                <span>min</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="field-card">
+            <div class="field-label">What counts as work?</div>
+            <textarea id="workDefinition" rows="3">
+Coding, writing docs, reading papers, IDE/editor, project management, work email, research tools.</textarea
+            >
+          </section>
+
+          <section class="field-card">
+            <div class="field-row">
+              <label for="roastMode">Accountability Voice</label>
+              <div class="row-input mode-select-wrap">
+                <select id="roastMode">
+                  <option value="savage">&#128520; Savage</option>
+                  <option value="deadpan_corporate">&#129302; Deadpan corporate</option>
+                  <option value="calm_disappointment">&#129496; Calm disappointment</option>
+                  <option value="drill_sergeant">&#127947; Drill sergeant</option>
+                  <option value="passive_aggressive_coach">&#128202; Passive-aggressive productivity coach</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section class="field-card compact">
+            <button id="muteBtn" class="mute-btn" type="button" aria-label="Toggle roast voice">
+              <span id="muteIcon" class="mute-icon" aria-hidden="true">&#128266;</span>
+              <span id="muteLabel">Voice On</span>
+            </button>
+          </section>
+
+          <section class="dashboard">
+            <div class="ring-wrap">
+              <div class="ring" id="timerRing">
+                <div class="ring-inner">
+                  <div class="ring-time" id="ringTime">00:00</div>
+                  <div class="ring-label">Time Left</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-main">
+              <div class="timer-head">
+                <div>
+                  <div class="timer-big" id="timeLeft">00:00</div>
+                  <div class="timer-sub">Time Left</div>
+                </div>
+                <div class="duration-meta">
+                  <div class="duration-chip" id="durationChip">30 min</div>
+                  <div class="recommended" id="recommendedText">Recommended: 30 min</div>
+                </div>
+              </div>
+
+              <section class="actions">
+                <button id="startBtn" class="primary">Start</button>
+                <button id="pauseBtn" disabled>Pause</button>
+                <button id="resumeBtn" disabled>Resume</button>
+                <button id="stopBtn" disabled>Stop</button>
+              </section>
+
+              <section class="status">
+                <p><span class="dot status-dot idle" id="statusDot"></span><strong>Current Status:</strong> <span id="statusText">Idle</span></p>
+                <p><span class="dot"></span><strong>Last Reason:</strong> <span id="lastReason">None yet.</span></p>
+                <p><span class="dot"></span><strong>Last Roast:</strong> <span id="lastRoast">None yet.</span></p>
+              </section>
+            </div>
+          </section>
+
+          <input
+            id="gifUrl"
+            type="url"
+            value="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWg1c3I5bnE4bjdkcGF6ajFkcWpyMXVpdmw0OXRtejQ0dW53aDUxbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/v01vVloDJbXrZRvEI8/giphy.gif"
+            class="hidden"
+          />
+        </section>
+
+        <section id="tabStats" class="tab-panel hidden">
+          <section class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-label">Streak</div>
+              <div class="stat-value">&#128293; <span id="streakValue">0</span></div>
+              <div class="stat-sub">Consecutive distraction-free completed sessions</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-label">Best Streak</div>
+              <div class="stat-value"><span id="bestStreakValue">0</span></div>
+              <div class="stat-sub">Highest distraction-free run</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-label">Avg Focus Before Distraction</div>
+              <div class="stat-value"><span id="avgFocusValue">0.0</span> min</div>
+              <div class="stat-sub">Based on transitions into distraction only</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-label">Recommended Session Time</div>
+              <div class="stat-value"><span id="recommendedValue">30</span> min</div>
+              <div class="stat-sub">110% of average focus span</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-label">Completed Sessions</div>
+              <div class="stat-value"><span id="completedSessionsValue">0</span></div>
+              <div class="stat-sub">Sessions that ran to timer completion</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-label">Distraction-Free Rate</div>
+              <div class="stat-value"><span id="freeRateValue">0</span>%</div>
+              <div class="stat-sub">Distraction-free completed sessions</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-label">Total Distraction Events</div>
+              <div class="stat-value"><span id="distractionEventsValue">0</span></div>
+              <div class="stat-sub">Distinct transitions to off-task mode</div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-label">Last Completed Session</div>
+              <div class="stat-value"><span id="lastSessionValue">Never</span></div>
+              <div class="stat-sub">Local timestamp</div>
+            </article>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>
+
